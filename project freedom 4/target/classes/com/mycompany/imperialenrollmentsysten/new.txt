@@ -1,0 +1,114 @@
+-- ===========================
+-- 1. STUDENTS TABLE
+-- ===========================
+CREATE TABLE IF NOT EXISTS `students` (
+  `studentID` INT(11) NOT NULL AUTO_INCREMENT,
+  `Name` TEXT DEFAULT NULL,
+  `Address` TEXT DEFAULT NULL,
+  `Course` TEXT DEFAULT NULL,
+  `Email` TEXT DEFAULT NULL,
+  `Gender` TEXT DEFAULT NULL,
+  `yearLvl` TEXT DEFAULT NULL,
+  PRIMARY KEY (`studentID`)
+) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- ===========================
+-- 2. TEACHERS TABLE
+-- ===========================
+CREATE TABLE IF NOT EXISTS `teachers` (
+  `teachID` INT(11) NOT NULL AUTO_INCREMENT,
+  `teachName` TEXT DEFAULT NULL,
+  `Address` TEXT DEFAULT NULL,
+  `Contact` TEXT DEFAULT NULL,
+  `Email` TEXT DEFAULT NULL,
+  `Dept` TEXT DEFAULT NULL,
+  `STATUS` TEXT DEFAULT NULL,
+  PRIMARY KEY (`teachID`)
+) ENGINE=InnoDB AUTO_INCREMENT=3000 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- ===========================
+-- 3. SUBJECTS TABLE
+-- ===========================
+CREATE TABLE IF NOT EXISTS `subjects` (
+  `SUBid` INT(11) NOT NULL AUTO_INCREMENT,
+  `SUBcode` TEXT DEFAULT NULL,
+  `SUBdesc` TEXT DEFAULT NULL,
+  `SUBUNITS` INT(11) DEFAULT NULL,
+  `SUBsched` TEXT DEFAULT NULL,
+  PRIMARY KEY (`SUBid`)
+) ENGINE=InnoDB AUTO_INCREMENT=2000 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- ===========================
+-- 4. ENROLL TABLE
+-- ===========================
+CREATE TABLE IF NOT EXISTS `enroll` (
+  `eid` INT(11) NOT NULL AUTO_INCREMENT,
+  `studid` INT(11) NOT NULL,
+  `subjid` INT(11) NOT NULL,
+  PRIMARY KEY (`eid`),
+  KEY `studid` (`studid`),
+  KEY `subjid` (`subjid`),
+  UNIQUE KEY `unique_enroll` (`studid`,`subjid`), -- prevents duplicate enrollments
+  CONSTRAINT `enroll_ibfk_1` FOREIGN KEY (`studid`) REFERENCES `students` (`studentID`),
+  CONSTRAINT `enroll_ibfk_2` FOREIGN KEY (`subjid`) REFERENCES `subjects` (`SUBid`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- ===========================
+-- 5. ASSIGN TABLE
+-- ===========================
+CREATE TABLE IF NOT EXISTS `assign` (
+  `aid` INT(11) NOT NULL AUTO_INCREMENT,
+  `tid` INT(11) DEFAULT NULL,
+  `subjid` INT(11) DEFAULT NULL,
+  PRIMARY KEY (`aid`),
+  UNIQUE KEY `unique_teacher` (`tid`),
+  UNIQUE KEY `unique_subject` (`subjid`),
+  CONSTRAINT `assign_ibfk_1` FOREIGN KEY (`tid`) REFERENCES `teachers` (`teachID`),
+  CONSTRAINT `assign_ibfk_2` FOREIGN KEY (`subjid`) REFERENCES `subjects` (`SUBid`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- ===========================
+-- 6. GRADES TABLE
+-- ===========================
+CREATE TABLE IF NOT EXISTS `Grades` (
+  `GradeID` INT PRIMARY KEY AUTO_INCREMENT,
+  `eid` INT,
+  `Prelim` TEXT,
+  `Midterm` TEXT,
+  `Prefinal` TEXT,
+  `Final` TEXT,
+  UNIQUE KEY `unique_grade` (`eid`),
+  CONSTRAINT `grades_enroll_fk` FOREIGN KEY (`eid`) REFERENCES `enroll`(`eid`)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- ===========================
+-- 7. TRANSACTION CHARGES TABLE
+-- ===========================
+CREATE TABLE IF NOT EXISTS `TransactionCharges` (
+  `TransID` INT PRIMARY KEY,
+  `Department` TEXT,
+  `SubjUnits` DECIMAL(10,2),
+  `Insurance` DECIMAL(10,2),
+  `Computer` DECIMAL(10,2),
+  `Laboratory` DECIMAL(10,2),
+  `Cultural` DECIMAL(10,2),
+  `Library` DECIMAL(10,2),
+  `Facility` DECIMAL(10,2)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- ===========================
+-- 8. INVOICE TABLE
+-- ===========================
+CREATE TABLE IF NOT EXISTS `Invoice` (
+  `Invoicenum` INT PRIMARY KEY,
+  `studid` INT,
+  `TransID` INT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
